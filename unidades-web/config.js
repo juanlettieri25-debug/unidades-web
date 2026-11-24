@@ -1,0 +1,1 @@
+window.UL_CONFIG = { url: 'https://mbftgayjqkytfzrbjfrr.supabase.co', anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iZnRnYXlqcWt5dGZ6cmJqZnJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MjkzMDQsImV4cCI6MjExMTEwNTMwNH0.DmzJVMrJe6qKqWKjU_kTF3yi6Q6_KN9TD4a4VMje4To', inactividadMin: 30 };
