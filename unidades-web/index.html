@@ -80,7 +80,7 @@ h2 { font-size: 15px; font-weight: 600; }
 .nav button[aria-current="page"] { opacity: 1; border-bottom-color: #ffc94d; }
 .globo { background: #ffc94d; color: #2b1d00; border-radius: 9px; font: 600 11px var(--sans); padding: 1px 6px; min-width: 18px; text-align: center; }
 .globo.rojo { background: #ff6b6b; color: #3a0000; }
-.barra-der { margin-left: auto; display: flex; align-items: center; gap: 12px; padding: 8px 0; flex-wrap: wrap; }
+.barra-der { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 8px 0; flex-wrap: wrap; }
 .barra-der label { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: .9; }
 .barra select, .barra .btn-barra { background: rgba(255, 255, 255, .1); color: inherit; border: 1px solid rgba(255, 255, 255, .25); border-radius: 6px; padding: 5px 8px; cursor: pointer; }
 .barra select option { color: #131f2c; background: #fff; }
@@ -416,6 +416,10 @@ details.tarjeta > summary.resumen-nov::before { content: "▸"; color: var(--tin
 details.tarjeta[open] > summary.resumen-nov::before { content: "▾"; }
 details.tarjeta > summary.resumen-nov h2 { margin: 0; font-size: 15px; }
 details.tarjeta > .vista { padding: 0 10px 10px; }
+
+/* botón del manual en la barra: ícono de libro + texto */
+.barra .btn-manual { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.barra .btn-manual svg { flex: none; }
 </style>
 </head>
 <body>
@@ -464,7 +468,7 @@ details.tarjeta > .vista { padding: 0 10px 10px; }
       <span id="sinc" class="sinc" role="status"><i></i><span>Conectando…</span></span>
       <button class="btn-barra" id="btnZoom" type="button" title="Letra más grande">A+</button>
       <button class="btn-barra" id="btnCon" type="button" title="Quiénes están usando el sistema ahora">1 en línea</button>
-      <button class="btn-barra" id="btnAyuda" type="button" title="Cómo se usa" aria-label="Ayuda">?</button>
+      <button class="btn-barra btn-manual" id="btnAyuda" type="button" title="Manual: cómo se usa el sistema" aria-label="Manual de uso"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6a4 4 0 0 1 4 4V20a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6a4 4 0 0 0-4 4V20a3 3 0 0 1 3-3h7z"/></svg><span>Manual</span></button>
       <button class="btn-barra" id="btnSalir" type="button" title="Tu usuario, cambio de PIN y salir"></button>
     </div>
   </header>
@@ -3838,7 +3842,7 @@ function abrirAyuda() {
     '<div class="ayuda" style="margin-top:12px"><span><kbd>F2</kbd> nueva carga</span><span><kbd>Enter</kbd> avanzar y guardar</span><span><kbd>F4</kbd> sólo combustible</span><span><kbd>Esc</kbd> cancelar</span></div>'
     : paso('Tu usuario es de solo consulta', 'Podés ver Movimientos, Alertas, Patentes y el Panel, y exportar a PDF o Excel. No podés cargar ni modificar datos.') +
       paso('Ver una unidad', 'Tocá cualquier patente para abrir su ficha con el historial.');
-  abrirModal('<header><h2>Cómo se usa</h2><button class="x" data-cerrar aria-label="Cerrar">×</button></header><div class="cuerpo">' + cuerpo +
+  abrirModal('<header><h2>Manual de uso</h2><button class="x" data-cerrar aria-label="Cerrar">×</button></header><div class="cuerpo">' + cuerpo +
     '</div><footer><span class="espacio"></span><button class="btn primario" type="button" data-cerrar autofocus>Entendido</button></footer>', 'angosto');
 }
 var DIAS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
