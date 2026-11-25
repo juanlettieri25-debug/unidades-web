@@ -69,15 +69,32 @@ h2 { font-size: 15px; font-weight: 600; }
 .der { text-align: right; }
 
 /* ---------- estructura ---------- */
-#app { height: 100%; display: flex; flex-direction: column; }
+#app { height: 100%; display: flex; }
+/* ---- menú lateral (como el de Entregar): fácil de ubicar, una opción por renglón, con ícono ---- */
+.lateral { width: 236px; flex: none; background: #1c2833; color: #c9d4de; display: flex; flex-direction: column; overflow-y: auto; }
+.lateral .marca { padding: 14px 16px 6px; color: #fff; }
+.lateral .sinc { padding: 0 16px 12px 60px; color: #c9d4de; }
+.lat-rotulo { background: #16212b; color: #7f93a6; font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 9px 16px; }
+.nav { display: flex; flex-direction: column; padding: 4px 0; }
+.nav .nav-grupo { color: #7f93a6; font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 14px 16px 6px; }
+.nav button { background: none; border: 0; border-left: 4px solid transparent; color: inherit; text-align: left; padding: 12px 16px 12px 14px; cursor: pointer; font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 12px; width: 100%; }
+.nav button svg { flex: none; opacity: .85; }
+.nav button:hover { background: rgba(255, 255, 255, .05); color: #fff; }
+.nav button[aria-current="page"] { background: rgba(255, 255, 255, .09); border-left-color: #ffc94d; color: #fff; font-weight: 600; }
+.nav button[aria-current="page"] svg { opacity: 1; color: #ffc94d; }
+.nav .globo { margin-left: auto; }
+.lat-pie { margin-top: auto; border-top: 1px solid rgba(255, 255, 255, .08); padding: 8px 0; }
+.btn-lat { background: none; border: 0; color: inherit; width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 16px; font-size: 14.5px; cursor: pointer; text-align: left; }
+.btn-lat:hover { background: rgba(255, 255, 255, .05); color: #fff; }
+.btn-lat svg, .btn-lat .ico-letra { flex: none; width: 18px; text-align: center; font-size: 13px; }
+.contenido { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .barra { background: var(--marca); color: var(--marca-tinta); display: flex; align-items: center; gap: 4px 14px; padding: 0 16px; min-height: 54px; flex-wrap: wrap; }
+.titulo-vista { margin: 0; font-size: 20px; font-weight: 700; white-space: nowrap; }
+.btn-menu { display: none; }
+.velo-lat { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 40; }
 .marca { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
 .logo { font: 600 13px var(--mono); letter-spacing: .04em; border: 2px solid currentColor; border-radius: 5px; padding: 2px 6px; }
 .marca b { font-size: 15px; font-weight: 600; white-space: nowrap; }
-.nav { display: flex; gap: 2px; align-self: stretch; flex-wrap: wrap; }
-.nav button { background: none; border: 0; color: inherit; opacity: .72; padding: 0 10px; min-height: 54px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-.nav button:hover { opacity: 1; }
-.nav button[aria-current="page"] { opacity: 1; border-bottom-color: #ffc94d; }
 .globo { background: #ffc94d; color: #2b1d00; border-radius: 9px; font: 600 11px var(--sans); padding: 1px 6px; min-width: 18px; text-align: center; }
 .globo.rojo { background: #ff6b6b; color: #3a0000; }
 .barra-der { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 8px 0; flex-wrap: wrap; }
@@ -92,6 +109,24 @@ h2 { font-size: 15px; font-weight: 600; }
 @keyframes pulso { 50% { opacity: .3; } }
 .aviso-demo { background: var(--ambar-suave); color: var(--ambar); font-size: 13px; padding: 6px 16px; border-bottom: 1px solid var(--linea); }
 main { flex: 1; overflow: auto; padding: 16px; }
+@media (max-width: 900px) {
+  .lateral { position: fixed; z-index: 50; top: 0; bottom: 0; left: 0; transform: translateX(-100%); transition: transform .2s; box-shadow: 0 0 30px rgba(0, 0, 0, .4); }
+  .lateral.abierto { transform: none; }
+  .btn-menu { display: inline-flex; align-items: center; }
+  .titulo-vista { font-size: 18px; }
+  #reloj { display: none; }
+}
+/* cabecera grande de cada pantalla de carga: qué se hace acá, en una frase */
+.carga-cabeza { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.carga-cabeza .ico-grande { width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center; flex: none; color: #fff; }
+.carga-cabeza.salida .ico-grande { background: #2f7de1; }
+.carga-cabeza.llegada .ico-grande { background: #1f9d6b; }
+.carga-cabeza.combustible .ico-grande { background: #d99a00; }
+.carga-cabeza h2 { margin: 0; font-size: 22px; }
+.carga-cabeza .ico-grande svg { width: 28px; height: 28px; }
+.carga-cabeza p { margin: 2px 0 0; color: var(--tinta-2); font-size: 14.5px; }
+.garita.una-col { grid-template-columns: 1fr; }
+
 .vista { max-width: 1500px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 
 /* ---------- piezas ---------- */
@@ -417,9 +452,16 @@ details.tarjeta[open] > summary.resumen-nov::before { content: "▾"; }
 details.tarjeta > summary.resumen-nov h2 { margin: 0; font-size: 15px; }
 details.tarjeta > .vista { padding: 0 10px 10px; }
 
-/* botón del manual en la barra: ícono de libro + texto */
-.barra .btn-manual { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
-.barra .btn-manual svg { flex: none; }
+
+/* "En la calle": una línea simple por vehículo (patente · chofer · hora de salida) */
+.lista-calle .fila-calle { grid-template-columns: auto 1fr auto; padding: 12px 16px; }
+.lista-calle .fila-calle .quien { font-size: 16px; }
+.lista-calle .fila-calle .salio { color: var(--tinta-2); font-size: 14px; white-space: nowrap; }
+.lista-calle .fila-calle .pat { font-size: 15px; }
+
+/* Salidas y Llegadas con su símbolo */
+.ico-emoji { display: inline-block; width: 20px; text-align: center; font-size: 19px; line-height: 1; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+.carga-cabeza .ico-grande .ico-emoji { width: auto; font-size: 30px; }
 </style>
 </head>
 <body>
@@ -459,23 +501,33 @@ details.tarjeta > .vista { padding: 0 10px 10px; }
 <div id="cargando" class="ingreso"><div class="caja"><span class="logo-caja"><img class="logo-img" alt="Logo"></span><h1>Control de Unidades Livianas</h1><div class="giro" aria-hidden="true"></div><div id="cargandoTxt" class="tenue">Cargando…</div></div></div>
 
 <div id="app" hidden>
-  <header class="barra">
+  <aside class="lateral" id="lateral" aria-label="Menú">
     <div class="marca" title="Control de Unidades Livianas"><img class="logo-img" alt=""><b>Unidades Livianas</b></div>
+    <span id="sinc" class="sinc" role="status"><i></i><span>Conectando…</span></span>
+    <div class="lat-rotulo">Menú</div>
     <nav class="nav" id="nav" aria-label="Secciones"></nav>
-    <div class="barra-der">
-      <select id="selPlanta" aria-label="Planta" title="Planta de esta garita"></select>
-      <span id="reloj" class="num"></span>
-      <span id="sinc" class="sinc" role="status"><i></i><span>Conectando…</span></span>
-      <button class="btn-barra" id="btnZoom" type="button" title="Letra más grande">A+</button>
-      <button class="btn-barra" id="btnCon" type="button" title="Quiénes están usando el sistema ahora">1 en línea</button>
-      <button class="btn-barra btn-manual" id="btnAyuda" type="button" title="Manual: cómo se usa el sistema" aria-label="Manual de uso"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6a4 4 0 0 1 4 4V20a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6a4 4 0 0 0-4 4V20a3 3 0 0 1 3-3h7z"/></svg><span>Manual</span></button>
-      <button class="btn-barra" id="btnSalir" type="button" title="Tu usuario, cambio de PIN y salir"></button>
+    <div class="lat-pie">
+      <button class="btn-lat" id="btnAyuda" type="button" title="Manual: cómo se usa el sistema" aria-label="Manual de uso"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6a4 4 0 0 1 4 4V20a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6a4 4 0 0 0-4 4V20a3 3 0 0 1 3-3h7z"/></svg><span>Manual</span></button>
+      <button class="btn-lat" id="btnZoom" type="button" title="Letra más grande"><b class="ico-letra">A+</b><span>Letra más grande</span></button>
     </div>
-  </header>
-  <div id="sinRed" class="sin-red" role="alert" hidden></div>
-  <div id="inactividad" class="inactividad" role="alertdialog" aria-live="assertive" hidden><span id="inactTxt"></span><button type="button" class="btn primario" id="inactSeguir">Seguir trabajando</button></div>
-  <div id="avisoDemo" class="aviso-demo" hidden>Versión de demostración con datos de noviembre del Excel: podés cargar y probar todo, pero lo que cargues acá no se guarda.</div>
-  <main id="principal"></main>
+  </aside>
+  <div class="velo-lat" id="veloLat" hidden></div>
+  <div class="contenido">
+    <header class="barra">
+      <button class="btn-barra btn-menu" id="btnMenu" type="button" aria-label="Abrir el menú" aria-controls="lateral"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <h1 class="titulo-vista" id="tituloVista"></h1>
+      <div class="barra-der">
+        <select id="selPlanta" aria-label="Planta" title="Planta de esta garita"></select>
+        <span id="reloj" class="num"></span>
+        <button class="btn-barra" id="btnCon" type="button" title="Quiénes están usando el sistema ahora">1 en línea</button>
+        <button class="btn-barra" id="btnSalir" type="button" title="Tu usuario, cambio de PIN y salir"></button>
+      </div>
+    </header>
+    <div id="sinRed" class="sin-red" role="alert" hidden></div>
+    <div id="inactividad" class="inactividad" role="alertdialog" aria-live="assertive" hidden><span id="inactTxt"></span><button type="button" class="btn primario" id="inactSeguir">Seguir trabajando</button></div>
+    <div id="avisoDemo" class="aviso-demo" hidden>Versión de demostración con datos de noviembre del Excel: podés cargar y probar todo, pero lo que cargues acá no se guarda.</div>
+    <main id="principal"></main>
+  </div>
 </div>
 
 <div id="modales"></div>
@@ -895,6 +947,7 @@ function esc(v) { return String(v === null || v === undefined ? '' : v).replace(
 function dos(n) { return (n < 10 ? '0' : '') + n; }
 function isoDe(f) { return f.getFullYear() + '-' + dos(f.getMonth() + 1) + '-' + dos(f.getDate()); }
 function hoy() { return isoDe(new Date()); }
+function ayer() { var f = new Date(); f.setDate(f.getDate() - 1); return isoDe(f); }
 function ahoraHM() { var f = new Date(); return dos(f.getHours()) + ':' + dos(f.getMinutes()); }
 function fechaDe(iso) { return new Date(+iso.substr(0, 4), +iso.substr(5, 2) - 1, +iso.substr(8, 2)); }
 function sumarDias(iso, n) { var f = fechaDe(iso); f.setDate(f.getDate() + n); return isoDe(f); }
@@ -961,7 +1014,7 @@ function patFicha(p, nota) {
 
 /* ============================================================ estado */
 var E = {
-  token: '', usuario: null, planta: '', vista: 'garita',
+  token: '', usuario: null, planta: '', vista: 'salidas',
   listas: { plantas: [], servicios: [], productos: [] }, config: { horasEnCalle: 16, kmMaxViaje: 600, kmExcluir: 2000, litrosMax: 150, diasMaxCalle: 1 },
   unidades: {}, choferes: [], novedades: [], dia: [], abiertos: [], fecha: '', ver: '', verCat: '', planilla: '',
   mes: null,            // registros del mes en curso, por id (para Alertas)
@@ -1263,7 +1316,7 @@ var G = { modo: '', tipo: '', patente: '', reg: null, filtro: '', confirma: '', 
 /** Lo que hace la garita, en palabras de la garita: [título, descripción, texto del buscador, ayuda]. */
 var TIPOS_G = {
   salida: ['SALIDA', 'Sale una unidad', 'Patente de la unidad que sale', 'Escribí la patente y apretá Enter. Después el chofer.'],
-  llegada: ['LLEGADA', 'Vuelve una unidad', 'Patente (o apellido del chofer) de la unidad que vuelve', 'Escribí la patente y apretá Enter, o tocá la unidad en la lista de la derecha. Después el km final.'],
+  llegada: ['LLEGADA', 'Vuelve una unidad', 'Patente (o apellido del chofer) de la unidad que vuelve', 'Escribí la patente y apretá Enter, o tocá el vehículo en la lista de abajo. Después el km final.'],
   combustible: ['COMBUSTIBLE', 'Carga de combustible', 'Patente de la unidad que carga combustible', 'Escribí la patente y apretá Enter. Después litros e importe.']
 };
 function botonesTipo() {
@@ -1273,16 +1326,31 @@ function botonesTipo() {
 }
 /** Busca unidades según lo que se está cargando: en salida sólo las que están en planta, en llegada sólo las que están en la calle. */
 function fuenteGarita(t) {
-  var l = fuenteUnidades(t, G.tipo === 'llegada');
-  if (G.tipo === 'salida') return l.filter(function (it) { return !abiertoDe(it.valor); });
-  if (G.tipo === 'llegada') return l.filter(function (it) { return !!abiertoDe(it.valor); });
+  var l = fuenteUnidades(t, G.tipo === 'llegada'), q = leerPatente(t), r;
+  if (G.tipo === 'salida') {
+    r = l.filter(function (it) { return !abiertoDe(it.valor); });
+    // escribió la patente de uno que está en la calle: no se lo esconde, se ofrece cargar su llegada
+    if (!r.length && q && abiertoDe(q)) r = [{ valor: q, cambiar: 'llegadas', html: patHtml(q) + '<span class="pill calle">Está en la calle</span><span class="sub">Enter para cargar su LLEGADA</span>' }];
+    return r;
+  }
+  if (G.tipo === 'llegada') {
+    r = l.filter(function (it) { return !!abiertoDe(it.valor); });
+    if (!r.length && q && unidad(q)) r = [{ valor: q, cambiar: 'salidas', html: patHtml(q) + '<span class="pill ok">Está en planta</span><span class="sub">No figura en la calle · Enter para cargar su SALIDA</span>' }];
+    return r;
+  }
   return l;
+}
+/** Elegir en el buscador: si corresponde a la otra pantalla (salida ↔ llegada), lleva ahí sola. */
+function elegirEnBuscador(it) {
+  if (it.cambiar === 'llegadas') { var ab = abiertoDe(it.valor); irA('llegadas'); if (ab) formLlegada(ab); avisar(it.valor + ' estaba en la calle: se abrió su LLEGADA.'); return; }
+  if (it.cambiar === 'salidas') { irA('salidas'); elegirUnidad(it.valor); avisar(it.valor + ' no estaba en la calle: se abrió su SALIDA.'); return; }
+  elegirUnidad(it.valor);
 }
 function pintarTipo() {
   $$('#gAcciones [data-tipo]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-tipo') === G.tipo)); });
   var inp = $('#gPatente'); if (inp) inp.placeholder = G.tipo ? TIPOS_G[G.tipo][2] : 'O escribí directamente la patente y Enter';
   pintarRapidas();
-  var t = $('#gCalleTitulo'); if (t) t.textContent = G.tipo === 'llegada' ? 'Tocá la unidad que volvió' : 'En la calle ahora';
+  var t = $('#gCalleTitulo'); if (t) t.textContent = G.tipo === 'llegada' ? 'Tocá el vehículo que volvió' : 'En la calle ahora';
 }
 
 function pillEstado(r) {
@@ -1299,22 +1367,29 @@ function turnoSugerido(p) {
   return t;
 }
 
+/** Cada pantalla de carga (Salidas, Llegadas, Combustible) hace UNA sola cosa y lo dice arriba en grande. */
+var CABEZAS_G = {
+  salida: ['¿Qué vehículo SALE?', 'Escribí la patente y apretá Enter (o tocá uno de "Salen seguido"). Después elegí el chofer y Enter para guardar.'],
+  llegada: ['¿Qué vehículo VUELVE?', 'Tocá el vehículo en la lista "En la calle", o escribí la patente y Enter. Después cargá el km final.'],
+  combustible: ['¿Qué vehículo carga COMBUSTIBLE?', 'Escribí la patente y apretá Enter. Después los litros y el importe.']
+};
+function tipoDeVista() { return E.vista === 'llegadas' ? 'llegada' : E.vista === 'combustible' ? 'combustible' : 'salida'; }
 function vistaGarita() {
-  return '<div class="vista">' +
-    '<div class="saludo-g" id="gSaludo"></div><div class="kpis" id="gKpis"></div>' +
-    '<div class="garita"><div class="col">' +
-      '<section class="tarjeta carga" id="gCarga"><div class="cuerpo">' +
-        '<div class="acciones-grandes" id="gAcciones">' + botonesTipo() + '</div>' +
-        '<div class="buscador"><input id="gPatente" aria-label="Patente" placeholder="Escribí la patente (o parte) y Enter" maxlength="12" spellcheck="false"></div>' +
-        '<div id="gForm"></div><div id="gRapidas" class="rapidas" hidden></div><div id="gHecho"></div>' +
-      '</div></section>' +
-      '<section class="tarjeta"><header><h2>Movimientos de hoy</h2><span class="tenue num" id="gHoyCuenta"></span><span class="espacio"></span>' +
-        '<button class="btn" type="button" id="gPdf" title="Descargar la planilla de hoy en PDF">Parte del día en PDF</button>' +
-        '<input class="entrada" id="gFiltro" style="width:220px" placeholder="Filtrar por patente o chofer" aria-label="Filtrar movimientos de hoy"></header>' +
-        '<div class="tabla-cont" id="gHoy"></div></section>' +
-    '</div><div class="col">' +
-      '<section class="tarjeta"><header><h2 id="gCalleTitulo">En la calle ahora</h2><span class="tenue num" id="gCalleCuenta"></span></header><div class="lista-calle" id="gCalle"></div></section>' +
-    '</div></div></div>';
+  var tipo = tipoDeVista(), cab = CABEZAS_G[tipo];
+  var carga = '<section class="tarjeta carga" id="gCarga"><div class="cuerpo">' +
+      '<div class="carga-cabeza ' + tipo + '"><span class="ico-grande">' + (ICONOS[E.vista] || '') + '</span><div><h2>' + cab[0] + '</h2><p>' + cab[1] + '</p></div></div>' +
+      '<div class="acciones-grandes" id="gAcciones" hidden>' + botonesTipo() + '</div>' +
+      '<div class="buscador"><input id="gPatente" aria-label="Patente" placeholder="Escribí la patente (o parte) y Enter" maxlength="12" spellcheck="false"></div>' +
+      '<div id="gForm"></div><div id="gRapidas" class="rapidas" hidden></div><div id="gHecho"></div>' +
+    '</div></section>';
+  var calle = '<section class="tarjeta"><header><h2 id="gCalleTitulo">Tocá el vehículo que volvió</h2><span class="tenue num" id="gCalleCuenta"></span></header><div class="lista-calle" id="gCalle"></div></section>';
+  var hoyS = '<section class="tarjeta"><header><h2>Movimientos de hoy</h2><span class="tenue num" id="gHoyCuenta"></span><span class="espacio"></span>' +
+      '<button class="btn" type="button" id="gPdf" title="Descargar la planilla de hoy en PDF">Parte del día en PDF</button>' +
+      '<input class="entrada" id="gFiltro" style="width:220px" placeholder="Filtrar por patente o chofer" aria-label="Filtrar movimientos de hoy"></header>' +
+      '<div class="tabla-cont" id="gHoy"></div></section>';
+  // la lista de los que están en la calle sólo va en Llegadas (es donde se usa); en Salidas y Combustible, nada que distraiga
+  var cuerpo = '<div class="garita una-col"><div class="col">' + carga + (tipo === 'llegada' ? calle : '') + hoyS + '</div></div>';
+  return '<div class="vista"><div class="saludo-g" id="gSaludo"></div><div class="kpis" id="gKpis"></div>' + cuerpo + '</div>';
 }
 
 function iniciarGarita() {
@@ -1326,7 +1401,7 @@ function iniciarGarita() {
         : G.tipo === 'salida' ? 'Ninguna unidad en planta coincide (puede que ya figure en la calle). Escribila completa para cargarla como nueva.'
         : 'No hay ninguna unidad con esa patente. Escribila completa para cargarla como nueva.';
     },
-    elegir: function (it) { elegirUnidad(it.valor); }
+    elegir: elegirEnBuscador
   });
   $('#gAcciones').onclick = function (e) {
     var b = e.target.closest('[data-tipo]'); if (!b) return;
@@ -1341,16 +1416,18 @@ function iniciarGarita() {
   };
   $('#gFiltro').value = G.filtro;
   $('#gFiltro').oninput = function () { G.filtro = this.value; pintarGarita(); };
-  $('#gCalle').onclick = function (e) {
+  if ($('#gCalle')) $('#gCalle').onclick = function (e) {
     var b = e.target.closest('[data-id]'); if (!b) return;
     var r = E.abiertos.filter(function (x) { return x.id === b.getAttribute('data-id'); })[0];
-    if (r) formLlegada(r);
+    if (!r) return;
+    if (E.vista !== 'llegadas') irA('llegadas');
+    formLlegada(r);
   };
   $('#gHoy').onclick = function (e) {
     var tr = e.target.closest('tr[data-id]'); if (!tr) return;
     var r = E.dia.filter(function (x) { return x.id === tr.getAttribute('data-id'); })[0];
     if (!r || r.pendiente) return;
-    if (r.estado === ESTADO.ABIERTO) formLlegada(r); else abrirRegistro(r);   // lo que está en la calle: directo a cargar la llegada
+    if (r.estado === ESTADO.ABIERTO) { if (E.vista !== 'llegadas') irA('llegadas'); formLlegada(r); } else abrirRegistro(r);   // lo que está en la calle: directo a cargar la llegada
   };
   $('#gPdf').onclick = function () {
     var filas = dePlanta(E.dia).filter(function (r) { return !r.pendiente; });
@@ -1373,19 +1450,22 @@ function pintarGarita() {
   var al = alertas().filter(function (a) { return a.sev !== 'dato'; });
   var criticas = al.filter(function (a) { return a.sev === 'critica'; }).length;
   $('#gKpis').innerHTML =
-    '<div class="kpi calle"><span>En la calle ahora</span><b class="num">' + calle.length + '</b> <small>' + (tarde ? tarde + ' hace más de ' + E.config.horasEnCalle + ' h' : 'unidades') + '</small></div>' +
+    '<div class="kpi calle"><span>En la calle ahora</span><b class="num">' + calle.length + '</b> <small>' + (tarde && esJefe() ? tarde + ' hace más de ' + E.config.horasEnCalle + ' h' : 'vehículos') + '</small></div>' +
     '<div class="kpi sal"><span>Salidas de hoy</span><b class="num">' + dia.filter(function (r) { return r.salida; }).length + '</b> <small>' + (E.planta || 'todas las plantas') + '</small></div>' +
     '<div class="kpi lle"><span>Llegadas de hoy</span><b class="num">' + dia.filter(function (r) { return r.llegada; }).length + '</b> <small>viajes cerrados</small></div>' +
     (esJefe() || !puedeCargar() ? '<div class="kpi ale" data-ir style="cursor:pointer"><span>Alertas</span><b class="num">' + al.length + '</b> <small>' + (criticas ? criticas + ' urgentes · ver' : 'ver detalle') + '</small></div>' : '');
 
   calle.sort(function (a, b) { return (a.fecha + a.salida) < (b.fecha + b.salida) ? -1 : 1; });
-  $('#gCalleCuenta').textContent = calle.length + (calle.length === 1 ? ' unidad' : ' unidades');
-  $('#gCalle').innerHTML = calle.length ? calle.map(function (r) {
-    var min = minutosEntre(r.fecha, r.salida, h, ahora);
-    return '<button type="button" class="fila-calle' + (min > limite ? ' tarde' : '') + (esNuevoDeOtro(r.id) ? ' de-otro' : '') + '" data-id="' + esc(r.id) + '" title="Cargar la llegada">' +
-      patHtml(r.patente) + '<span class="quien">' + esc(r.chofer || 'Sin chofer') + '</span><span class="hace num">' + duracion(min) + '</span>' +
-      '<span class="det">' + esc([r.servicio, 'salió ' + (r.fecha !== h ? fechaCorta(r.fecha) + ' ' : '') + r.salida, r.planta].filter(Boolean).join(' · ')) + (r.pendiente ? ' · guardando…' : '') + '</span></button>';
-  }).join('') : '<div class="vacio-grande">No hay unidades en la calle.</div>';
+  if ($('#gCalle')) {
+    $('#gCalleCuenta').textContent = calle.length + (calle.length === 1 ? ' en la calle' : ' en la calle');
+    // una línea por vehículo: patente, chofer y a qué hora salió. Nada más.
+    $('#gCalle').innerHTML = calle.length ? calle.map(function (r) {
+      var cuando = r.fecha === h ? r.salida : (r.fecha === ayer() ? 'ayer ' : fechaCorta(r.fecha) + ' ') + r.salida;
+      return '<button type="button" class="fila-calle' + (esNuevoDeOtro(r.id) ? ' de-otro' : '') + '" data-id="' + esc(r.id) + '" title="Cargar la llegada de ' + esc(r.patente) + '">' +
+        patHtml(r.patente) + '<span class="quien">' + esc(r.chofer || 'Sin chofer') + (!E.planta && r.planta ? ' <small class="tenue">· ' + esc(r.planta) + '</small>' : '') + '</span>' +
+        '<span class="salio">' + (r.pendiente ? 'guardando…' : 'salió ' + esc(cuando)) + '</span></button>';
+    }).join('') : '<div class="vacio-grande">No hay vehículos en la calle.</div>';
+  }
 
   var q = sinAcentos(G.filtro).trim(), qp = leerPatente(G.filtro);
   var filas = dia.filter(function (r) { return !q || (qp && r.patente.indexOf(qp) > -1) || sinAcentos(r.chofer).indexOf(q) > -1; });
@@ -1412,8 +1492,16 @@ function elegirUnidad(p) {
   $('#gHecho').innerHTML = '';
   var ab = abiertoDe(p);
   if (G.tipo === 'combustible') return formCombustible(p);
-  if (G.tipo === 'salida' && ab) { avisar(p + ' figura en la calle (salió ' + (ab.fecha !== hoy() ? fechaCorta(ab.fecha) + ' ' : '') + ab.salida + '). Primero hay que cargar su LLEGADA.', 'error'); return cancelarCarga(); }
-  if (G.tipo === 'llegada' && !ab) { avisar(p + ' no figura en la calle. Si salió y nadie cargó la salida, cargala primero como SALIDA.', 'error'); return cancelarCarga(); }
+  if (G.tipo === 'salida' && ab) {
+    avisar(p + ' figura en la calle (salió ' + (ab.fecha !== hoy() ? fechaCorta(ab.fecha) + ' ' : '') + ab.salida + '). Primero hay que cargar su LLEGADA.', 'error',
+      { texto: 'Cargar la llegada', hacer: function () { irA('llegadas'); formLlegada(ab); } });
+    return cancelarCarga();
+  }
+  if (G.tipo === 'llegada' && !ab) {
+    avisar(p + ' no figura en la calle. Si salió y nadie cargó la salida, cargala primero en SALIDAS.', 'error',
+      { texto: 'Cargar la salida', hacer: function () { irA('salidas'); elegirUnidad(p); } });
+    return cancelarCarga();
+  }
   if (ab) formLlegada(ab); else formSalida(p);
 }
 
@@ -2211,7 +2299,7 @@ function iniciarAlertas() {
   $('#aLista').onclick = function (e) {
     var b = e.target.closest('[data-i]'); if (!b) return;
     var al = (A.visibles || [])[+b.getAttribute('data-i')]; if (!al) return;
-    if (b.hasAttribute('data-llegada')) { irA('garita'); formLlegada(al.reg); } else abrirRegistro(al.reg);
+    if (b.hasAttribute('data-llegada')) { irA('llegadas'); formLlegada(al.reg); } else abrirRegistro(al.reg);
   };
   pintarAlertas();
 }
@@ -3309,12 +3397,12 @@ function iniciarInicio() {
   $('#principal').onclick = function (e) {
     var a = e.target.closest('[data-ir]'); if (!a || E.vista !== 'inicio') return;
     if (a.getAttribute('data-pestana')) D.pestana = a.getAttribute('data-pestana');
-    if (a.getAttribute('data-ir') === 'garita' && puedeCargar()) { irA('garita'); setTimeout(function () { var p = $('#gPatente'); if (p) p.focus(); }, 0); return; }
+    if (a.getAttribute('data-ir') === 'salidas' && puedeCargar()) { irA('salidas'); setTimeout(function () { var p = $('#gPatente'); if (p) p.focus(); }, 0); return; }
     irA(a.getAttribute('data-ir'));
   };
   var acc = [];
-  if (puedeCargar()) acc.push(['garita', '', 'Cargar salida o llegada', 'primario']);
-  acc.push(['movimientos', '', 'Movimientos', ''], ['panel', '', 'Panel y informes', ''], ['alertas', '', 'Alertas', ''], ['novedades', '', 'Novedades de unidades', '']);
+  if (puedeCargar()) acc.push(['salidas', '', 'Cargar salidas y llegadas', 'primario']);
+  acc.push(['movimientos', '', 'Movimientos', ''], ['panel', '', 'Panel y informes', ''], ['alertas', '', 'Alertas', ''], ['vehiculos', '', 'Vehículos y novedades de taller', ''], ['choferes', '', 'Choferes', '']);
   if (esJefe()) acc.push(['datos', 'unidades', 'Unidades y choferes', ''], ['usuarios', '', 'Usuarios de seguridad', ''], ['historial', '', 'Quién modificó qué', '']);
   if (esAdmin()) acc.push(['datos', 'base', 'Base de datos y copias', '']);
   $('#iAccesos').innerHTML = acc.map(function (a) {
@@ -3342,7 +3430,7 @@ function pintarInicio() {
     '<div class="kpi sal"><span>Salidas de hoy</span><b class="num">' + dia.filter(function (r) { return r.salida; }).length + '</b> <small>viajes iniciados</small></div>' +
     '<div class="kpi lle"><span>Llegadas de hoy</span><b class="num">' + dia.filter(function (r) { return r.llegada; }).length + '</b> <small>viajes cerrados</small></div>' +
     '<div class="kpi ale" data-ir="alertas" style="cursor:pointer"><span>Alertas</span><b class="num">' + al.length + '</b> <small>' + (criticas.length ? criticas.length + ' urgentes' : 'sin urgentes') + '</small></div>' +
-    '<div class="kpi calle" data-ir="novedades" style="cursor:pointer"><span>Novedades pendientes</span><b class="num">' + pend + '</b> <small>' + (taller ? taller + ' en taller' : 'ninguna en taller') + '</small></div>';
+    '<div class="kpi calle" data-ir="vehiculos" style="cursor:pointer"><span>Novedades pendientes</span><b class="num">' + pend + '</b> <small>' + (taller ? taller + ' en taller' : 'ninguna en taller') + '</small></div>';
 
   // Lo urgente primero; después lo que conviene revisar.
   var orden = al.filter(function (a) { return a.sev === 'critica'; }).concat(al.filter(function (a) { return a.sev !== 'critica'; }));
@@ -3443,7 +3531,7 @@ var ZOOMS = [1, 1.15, 1.3, 1.5];
 function aplicarZoom() {
   var i = Number(leerLocal('zoom')) || 0; if (i < 0 || i >= ZOOMS.length) i = 0;
   document.documentElement.style.zoom = ZOOMS[i] === 1 ? '' : String(ZOOMS[i]);
-  var b = $('#btnZoom'); if (b) { b.textContent = i ? 'A+' + i : 'A+'; b.title = 'Letra más grande (ahora ' + Math.round(ZOOMS[i] * 100) + '%)'; }
+  var b = $('#btnZoom'); if (b) { var et = $('.ico-letra', b); (et || b).textContent = i ? 'A+' + i : 'A+'; b.title = 'Letra más grande (ahora ' + Math.round(ZOOMS[i] * 100) + '%)'; }
 }
 function cambiarZoom() { guardarLocal('zoom', String(((Number(leerLocal('zoom')) || 0) + 1) % ZOOMS.length)); aplicarZoom(); }
 
@@ -3545,7 +3633,7 @@ function plantaParaAlta() { return E.usuario.rol === 'SEGURIDAD' && E.usuario.pl
 
 function vistaPatentes() {
   var fija = E.usuario.rol === 'SEGURIDAD' && E.usuario.planta;
-  var alta = puedeCargar() ? '<section class="tarjeta"><header><h2>Agregar una patente nueva</h2><span class="tenue">para las unidades que todavía no figuran en el sistema</span></header>' +
+  var alta = puedeCargar() ? '<section class="tarjeta"><header><h2>Agregar un vehículo nuevo</h2><span class="tenue">sólo si su patente todavía no figura en el sistema</span></header>' +
     '<div class="cuerpo"><div class="grilla">' +
       '<label class="campo c4"><span>Patente</span><input id="ptPat" class="mono pat-grande" style="text-transform:uppercase" maxlength="10" spellcheck="false" autocomplete="off" placeholder="AB123CD" aria-describedby="ptEstado"><small id="ptEstado">Escribila completa: ABC123, AB123CD o de moto A123BCD.</small></label>' +
       (fija ? '<div class="campo c4"><span>Planta</span><div class="valor-fijo">' + esc(E.usuario.planta) + '</div><small>Se agrega en tu planta.</small></div>'
@@ -3555,10 +3643,10 @@ function vistaPatentes() {
       '<label class="campo c4"><span>Km actual (opcional)</span><input id="ptKm" class="num" inputmode="numeric" maxlength="9" placeholder="Ej.: 125430"></label>' +
       '<label class="campo c4"><span>Chofer habitual (opcional)</span><input id="ptChofer" maxlength="80" autocomplete="off" placeholder="Apellido y nombre"></label>' +
     '</div><div class="error-txt" id="ptMsg" role="alert"></div>' +
-    '<div class="acciones" style="margin-top:10px"><button class="btn primario grande" type="button" id="ptGuardar">Agregar patente</button></div>' +
+    '<div class="acciones" style="margin-top:10px"><button class="btn primario grande" type="button" id="ptGuardar">Agregar vehículo</button></div>' +
     '<div id="ptHecho"></div></div></section>' : '';
-  var lista = '<section class="tarjeta"><header><h2>Patentes ' + (E.planta ? 'de ' + esc(E.planta) : 'cargadas') + '</h2><span class="tenue num" id="ptCuenta"></span><span class="espacio"></span>' +
-    '<input class="entrada" id="ptBuscar" style="width:220px" placeholder="Buscar patente, servicio o chofer" aria-label="Buscar patentes" value="' + esc(PT.buscar) + '"></header>' +
+  var lista = '<section class="tarjeta"><header><h2>Vehículos ' + (E.planta ? 'de ' + esc(E.planta) : 'cargados') + '</h2><span class="tenue num" id="ptCuenta"></span><span class="espacio"></span>' +
+    '<input class="entrada" id="ptBuscar" style="width:220px" placeholder="Buscar patente, servicio o chofer" aria-label="Buscar vehículos" value="' + esc(PT.buscar) + '"></header>' +
     '<div class="tabla-cont" id="ptLista"></div></section>';
   var nov = esJefe() ? '<details class="tarjeta" id="ptNovedades"' + (E.novedades.some(function (n) { return n.estado !== 'RESUELTA'; }) ? ' open' : '') + '>' +
     '<summary class="resumen-nov"><h2>Novedades de taller</h2><span class="tenue num" id="ptNovCuenta"></span></summary>' + vistaNovedades() + '</details>' : '';
@@ -3592,7 +3680,7 @@ function iniciarPatentes() {
     $('#ptHecho').onclick = function (e) {
       var b = e.target.closest('[data-salida]'); if (!b) return;
       var p = b.getAttribute('data-salida');
-      G.tipo = 'salida'; irA('garita'); elegirUnidad(p);
+      irA('salidas'); elegirUnidad(p);
     };
     if (PT.ultima) pintarHechoPatente(PT.ultima);
     pat.focus();
@@ -3605,7 +3693,7 @@ function iniciarPatentes() {
 function pintarHechoPatente(p) {
   var h = $('#ptHecho'); if (!h) return;
   h.innerHTML = '<div class="hecho">✓ Se agregó ' + patHtml(p) + ' al sistema.' + '<span class="espacio"></span>' +
-    (puedeCargar() && vistaPermitida('garita') ? '<button class="btn" type="button" data-salida="' + esc(p) + '">Cargar su salida ahora</button>' : '') + '</div>';
+    (puedeCargar() && vistaPermitida('salidas') ? '<button class="btn" type="button" data-salida="' + esc(p) + '">Cargar su salida ahora</button>' : '') + '</div>';
 }
 
 function guardarPatenteNueva() {
@@ -3624,16 +3712,16 @@ function guardarPatenteNueva() {
     E.unidades[p] = { patente: p, planta: d && d.planta || datos.planta || '', servicio: datos.servicio, producto: datos.producto, km: datos.km, chofer: chofer, fechaKm: datos.km === '' ? '' : hoy(), estado: 'ACTIVA' };
     if (chofer) asegurarChofer(chofer);
     PT.ultima = p;
-    avisar('Patente ' + p + ' agregada.');
-    if (E.vista !== 'patentes') return;
-    b.disabled = false; b.textContent = 'Agregar patente';
+    avisar('Vehículo ' + p + ' agregado.');
+    if (E.vista !== 'vehiculos') return;
+    b.disabled = false; b.textContent = 'Agregar vehículo';
     ['#ptPat', '#ptKm', '#ptChofer'].forEach(function (s) { $(s).value = ''; });
     $('#ptServicio').value = ''; $('#ptProducto').value = '';
     estadoPatenteTipeada(); pintarHechoPatente(p); pintarListaPatentes();
     $('#ptPat').focus();
   }, function (err) {
-    if (E.vista !== 'patentes') return avisar('No se pudo agregar ' + p + ': ' + err.message, 'error');
-    b.disabled = false; b.textContent = 'Agregar patente';
+    if (E.vista !== 'vehiculos') return avisar('No se pudo agregar ' + p + ': ' + err.message, 'error');
+    b.disabled = false; b.textContent = 'Agregar vehículo';
     msg.textContent = err.codigo === 'RED' ? 'No hay conexión: la patente NO se guardó. Probá de nuevo cuando vuelva internet.' : err.message;
   });
 }
@@ -3654,7 +3742,7 @@ function pintarListaPatentes() {
       return '<tr' + (u.patente === PT.ultima ? ' class="de-otro"' : '') + '><td>' + patHtml(u.patente) + '</td><td>' + esc(u.planta || '—') + '</td><td>' + esc(u.servicio || '—') + '</td><td>' + esc(u.producto || '—') + '</td>' +
         '<td class="num">' + (u.km === '' || u.km === null || u.km === undefined ? '—' : esc(Number(u.km).toLocaleString('es-AR'))) + '</td><td>' + esc(u.chofer || '—') + '</td><td>' + est + '</td></tr>';
     }).join('') + '</tbody></table>' + (l.length > max ? '<div class="cuerpo nota">Se muestran ' + max + ' de ' + l.length + '. Escribí parte de la patente para encontrarla.</div>' : '')
-    : '<div class="vacio-grande">' + (q ? 'Ninguna patente coincide con "' + esc(PT.buscar) + '".' + (qp.length >= 6 && puedeCargar() ? ' Si no está, agregala arriba.' : '') : 'No hay patentes cargadas.') + '</div>';
+    : '<div class="vacio-grande">' + (q ? 'Ninguna patente coincide con "' + esc(PT.buscar) + '".' + (qp.length >= 6 && puedeCargar() ? ' Si no está, agregala arriba.' : '') : 'No hay vehículos cargados.') + '</div>';
 }
 
 function pintarPatentes() {
@@ -3667,15 +3755,141 @@ function pintarPatentes() {
   if ($('#ptPat') && document.activeElement !== $('#ptPat')) estadoPatenteTipeada();
 }
 
+/* ============================================================ CHOFERES
+ * Lista de choferes para buscar rápido (quién está en la calle y con qué vehículo) y alta de los que faltan.
+ *   - Seguridad: sólo puede AGREGAR un chofer que no está (la base no le deja modificar ni desactivar a nadie).
+ *   - Supervisor / administrador: además pueden corregir nombre, DNI o desactivar (botón "Editar"). */
+var CH = { buscar: '', ultimo: '' };
+
+function vistaChoferes() {
+  var alta = puedeCargar() ? '<section class="tarjeta"><header><h2>Agregar un chofer nuevo</h2><span class="tenue">sólo si todavía no está en la lista</span></header>' +
+    '<div class="cuerpo"><div class="grilla">' +
+      '<label class="campo c8"><span>Apellido y nombre</span><input id="chNombre" maxlength="80" autocomplete="off" spellcheck="false" placeholder="Ej.: Pérez Juan Carlos" aria-describedby="chEstado"><small id="chEstado">Primero el apellido, después el nombre.</small></label>' +
+      '<label class="campo c4"><span>DNI (opcional)</span><input id="chDni" class="num" inputmode="numeric" maxlength="10" placeholder="Sin puntos"></label>' +
+    '</div><div class="error-txt" id="chMsg" role="alert"></div>' +
+    '<div class="acciones" style="margin-top:10px"><button class="btn primario grande" type="button" id="chGuardar">Agregar chofer</button></div>' +
+    '<div id="chHecho"></div></div></section>' : '';
+  return '<div class="vista">' + alta +
+    '<section class="tarjeta"><header><h2>Choferes</h2><span class="tenue num" id="chCuenta"></span><span class="espacio"></span>' +
+    '<input class="entrada" id="chBuscar" style="width:240px" placeholder="Buscar por apellido, nombre o DNI" aria-label="Buscar choferes" value="' + esc(CH.buscar) + '"></header>' +
+    '<div class="tabla-cont" id="chLista"></div></section></div>';
+}
+
+function normalizarNombre(t) { return String(t || '').replace(/\s+/g, ' ').trim(); }
+function choferPorNombre(n) { var k = sinAcentos(normalizarNombre(n)); return E.choferes.filter(function (c) { return c.clave === k; })[0] || null; }
+
+function estadoChoferTipeado() {
+  var el = $('#chEstado'); if (!el) return;
+  var n = normalizarNombre($('#chNombre').value), c = choferPorNombre(n);
+  el.className = '';
+  if (!n) { el.textContent = 'Primero el apellido, después el nombre.'; return; }
+  if (c) { el.className = 'mal'; el.textContent = 'Ya está en la lista' + (c.activo ? '' : ' (inactivo: pedile a un supervisor que lo reactive)') + '. No hace falta agregarlo.'; return; }
+  if (n.length < 5 || n.indexOf(' ') === -1) { el.textContent = 'Escribí apellido y nombre completos.'; return; }
+  el.className = 'bien'; el.textContent = 'No figura: se puede agregar.';
+}
+
+function iniciarChoferes() {
+  if ($('#chNombre')) {
+    $('#chNombre').oninput = function () { $('#chMsg').textContent = ''; estadoChoferTipeado(); };
+    $('#chGuardar').onclick = guardarChoferNuevo;
+    $('.vista').onkeydown = function (e) {
+      if (e.key !== 'Enter' || !e.target.closest('#chNombre, #chDni')) return;
+      e.preventDefault(); guardarChoferNuevo();
+    };
+    $('#chNombre').focus();
+  }
+  $('#chBuscar').oninput = function () { CH.buscar = this.value; pintarChoferes(); };
+  $('#chLista').onclick = function (e) {
+    var b = e.target.closest('[data-editar-chofer]'); if (!b) return;
+    var c = choferPorNombre(b.getAttribute('data-editar-chofer')); if (c) editarChofer(c);
+  };
+  pintarChoferes();
+}
+
+function guardarChoferNuevo() {
+  var b = $('#chGuardar'); if (!b || b.disabled) return;
+  var nombre = normalizarNombre($('#chNombre').value), dni = $('#chDni').value.replace(/\D/g, ''), msg = $('#chMsg');
+  msg.textContent = '';
+  if (nombre.length < 5 || nombre.indexOf(' ') === -1) { msg.textContent = 'Escribí apellido y nombre completos.'; return $('#chNombre').focus(); }
+  if (choferPorNombre(nombre)) { estadoChoferTipeado(); msg.textContent = nombre + ' ya está en la lista.'; return $('#chNombre').focus(); }
+  if (dni && (dni.length < 7 || dni.length > 9)) { msg.textContent = 'El DNI tiene que tener 7 u 8 números (o dejalo vacío).'; return $('#chDni').focus(); }
+  b.disabled = true; b.textContent = 'Guardando…';
+  escribir('guardarChofer', { nombre: nombre, dni: dni }).then(function () {
+    if (!choferPorNombre(nombre)) E.choferes.push({ nombre: nombre, dni: dni, activo: true, clave: sinAcentos(nombre) });
+    CH.ultimo = nombre;
+    avisar('Chofer ' + nombre + ' agregado.');
+    if (E.vista !== 'choferes') return;
+    b.disabled = false; b.textContent = 'Agregar chofer';
+    $('#chNombre').value = ''; $('#chDni').value = '';
+    $('#chHecho').innerHTML = '<div class="hecho">✓ Se agregó a <b>' + esc(nombre) + '</b> a la lista de choferes.</div>';
+    estadoChoferTipeado(); pintarChoferes(); $('#chNombre').focus();
+  }, function (err) {
+    if (E.vista !== 'choferes') return avisar('No se pudo agregar a ' + nombre + ': ' + err.message, 'error');
+    b.disabled = false; b.textContent = 'Agregar chofer';
+    msg.textContent = err.codigo === 'RED' ? 'No hay conexión: el chofer NO se guardó. Probá de nuevo cuando vuelva internet.' : err.message;
+  });
+}
+
+function pintarChoferes() {
+  var cont = $('#chLista'); if (!cont) return;
+  var jefe = esJefe(), q = sinAcentos(CH.buscar).trim(), qd = CH.buscar.replace(/\D/g, '');
+  // qué vehículo tiene cada chofer: en la calle ahora, y los que maneja habitualmente
+  var enCalle = {}, habitual = {};
+  E.abiertos.forEach(function (r) { if (r.chofer) enCalle[sinAcentos(r.chofer)] = r; });
+  Object.keys(E.unidades).forEach(function (p) { var u = E.unidades[p]; if (u.chofer) (habitual[sinAcentos(u.chofer)] = habitual[sinAcentos(u.chofer)] || []).push(p); });
+  var todos = E.choferes.filter(function (c) { return jefe || c.activo; });
+  var l = todos.filter(function (c) {
+    if (!q) return true;
+    if (qd.length >= 4 && String(c.dni || '').indexOf(qd) > -1) return true;
+    return q.split(/\s+/).every(function (w) { return c.clave.indexOf(w) > -1; });
+  }).sort(function (a, b) {
+    if (a.nombre === CH.ultimo) return -1; if (b.nombre === CH.ultimo) return 1;
+    return a.clave < b.clave ? -1 : 1;
+  });
+  $('#chCuenta').textContent = q ? l.length + ' de ' + todos.length : todos.length;
+  var max = 60, ver = l.slice(0, max);
+  cont.innerHTML = ver.length ? '<table class="tabla"><thead><tr><th>Chofer</th><th>DNI</th><th>Ahora</th><th>Vehículos que maneja</th>' + (jefe ? '<th></th>' : '') + '</tr></thead><tbody>' +
+    ver.map(function (c) {
+      var r = enCalle[c.clave], hab = (habitual[c.clave] || []).slice(0, 3);
+      var ahora = r ? '<span class="pill calle">En la calle</span> ' + patHtml(r.patente) : !c.activo ? '<span class="pill gris">Inactivo</span>' : '<span class="tenue">—</span>';
+      return '<tr' + (c.nombre === CH.ultimo ? ' class="de-otro"' : '') + '><td><b>' + esc(c.nombre) + '</b></td><td class="num">' + esc(c.dni || '—') + '</td><td>' + ahora + '</td>' +
+        '<td>' + (hab.length ? hab.map(function (p) { return patHtml(p); }).join(' ') : '<span class="tenue">—</span>') + '</td>' +
+        (jefe ? '<td class="der"><button class="btn chico" type="button" data-editar-chofer="' + esc(c.nombre) + '">Editar</button></td>' : '') + '</tr>';
+    }).join('') + '</tbody></table>' + (l.length > max ? '<div class="cuerpo nota">Se muestran ' + max + ' de ' + l.length + '. Escribí parte del apellido para encontrarlo.</div>' : '')
+    : '<div class="vacio-grande">' + (q ? 'Ningún chofer coincide con "' + esc(CH.buscar) + '".' + (puedeCargar() ? ' Si no está, agregalo arriba.' : '') : 'No hay choferes cargados.') + '</div>';
+  if ($('#chNombre') && document.activeElement !== $('#chNombre')) estadoChoferTipeado();
+}
+
 /* ============================================================ navegación, ingreso y arranque */
+/* Íconos del menú (trazos simples, se ven bien en cualquier pantalla). */
+function ico(d, extra) { return '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"' + (extra || '') + '>' + d + '</svg>'; }
+var ICONOS = {
+  inicio: ico('<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
+  salidas: '<span class="ico-emoji" aria-hidden="true">🛫</span>',
+  llegadas: '<span class="ico-emoji" aria-hidden="true">🛬</span>',
+  combustible: ico('<path d="M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16"/><path d="M3 21h13"/><path d="M7 8h5"/><path d="M15 9h2a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V8l-3-3"/>'),
+  vehiculos: ico('<path d="M5 17h-1a1 1 0 0 1-1-1v-4l2-5h12l2 5v4a1 1 0 0 1-1 1h-1"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5"/><path d="M5 12h14"/>'),
+  choferes: ico('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'),
+  movimientos: ico('<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>'),
+  alertas: ico('<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/>'),
+  panel: ico('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+  datos: ico('<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>'),
+  usuarios: ico('<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.6c2.4.6 4 2.4 4 5.4"/>'),
+  historial: ico('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')
+};
+var esPantallaCarga = function (v) { return v === 'salidas' || v === 'llegadas' || v === 'combustible'; };
+/* Menú en el orden en que se usa. "grupo" abre un título nuevo en el menú lateral. */
 var VISTAS = {
   inicio: { titulo: 'Inicio', html: vistaInicio, iniciar: iniciarInicio, pintar: pintarInicio, quien: function () { return E.usuario.rol !== 'SEGURIDAD'; } },
-  garita: { titulo: 'Garita', html: vistaGarita, iniciar: iniciarGarita, pintar: pintarGarita, quien: puedeCargar },
-  movimientos: { titulo: 'Movimientos', html: vistaMovimientos, iniciar: iniciarMovimientos, pintar: pintarMovimientos },
+  salidas: { titulo: 'Salidas', html: vistaGarita, iniciar: iniciarGarita, pintar: pintarGarita, quien: puedeCargar },
+  llegadas: { titulo: 'Llegadas', html: vistaGarita, iniciar: iniciarGarita, pintar: pintarGarita, quien: puedeCargar },
+  combustible: { titulo: 'Combustible', html: vistaGarita, iniciar: iniciarGarita, pintar: pintarGarita, quien: puedeCargar },
+  vehiculos: { titulo: 'Vehículos', html: vistaPatentes, iniciar: iniciarPatentes, pintar: pintarPatentes },
+  choferes: { titulo: 'Choferes', html: vistaChoferes, iniciar: iniciarChoferes, pintar: pintarChoferes },
+  movimientos: { titulo: 'Movimientos', grupo: 'Consultas', html: vistaMovimientos, iniciar: iniciarMovimientos, pintar: pintarMovimientos },
   alertas: { titulo: 'Alertas', html: vistaAlertas, iniciar: iniciarAlertas, pintar: pintarAlertas, quien: function () { return esJefe() || !puedeCargar(); } },
-  patentes: { titulo: 'Patentes', html: vistaPatentes, iniciar: iniciarPatentes, pintar: pintarPatentes },  // reemplaza a "Novedades": alta de patentes (y, para jefes, el tablero de taller)
   panel: { titulo: 'Panel', html: vistaPanel, iniciar: iniciarPanel, pintar: function () {}, quien: function () { return esJefe() || !puedeCargar(); } },
-  datos: { titulo: 'Datos base', html: vistaDatos, iniciar: iniciarDatos, pintar: pintarDatos, quien: esJefe },
+  datos: { titulo: 'Datos base', grupo: 'Administración', html: vistaDatos, iniciar: iniciarDatos, pintar: pintarDatos, quien: esJefe },
   usuarios: { titulo: 'Usuarios', html: vistaUsuarios, iniciar: iniciarUsuarios, pintar: pintarUsuarios, quien: esJefe },
   historial: { titulo: 'Historial', html: vistaHistorial, iniciar: iniciarHistorial, pintar: refrescarHistorial, quien: esJefe }
 };
@@ -3685,15 +3899,27 @@ function vistaPermitida(k) { return !!VISTAS[k] && (!VISTAS[k].quien || VISTAS[k
 function pintarNav() {
   var al = alertas().filter(function (a) { return a.sev !== 'dato'; }), urg = al.filter(function (a) { return a.sev === 'critica'; }).length;
   var pend = E.novedades.filter(function (n) { return n.estado === 'PENDIENTE' && (!E.planta || !n.planta || n.planta === E.planta); }).length;
+  var calle = dePlanta(E.abiertos).length;
+  var grupo = '';
   $('#nav').innerHTML = Object.keys(VISTAS).filter(vistaPermitida).map(function (k) {
-    var globo = k === 'alertas' && al.length ? '<span class="globo' + (urg ? ' rojo' : '') + '">' + al.length + '</span>' : k === 'patentes' && pend && esJefe() ? '<span class="globo">' + pend + '</span>' : '';
-    return '<button type="button" data-vista="' + k + '"' + (E.vista === k ? ' aria-current="page"' : '') + '>' + VISTAS[k].titulo + globo + '</button>';
+    var v = VISTAS[k], cab = '';
+    if (v.grupo && v.grupo !== grupo) { grupo = v.grupo; cab = '<div class="nav-grupo">' + esc(grupo) + '</div>'; }
+    var globo = k === 'alertas' && al.length ? '<span class="globo' + (urg ? ' rojo' : '') + '">' + al.length + '</span>'
+      : k === 'vehiculos' && pend && esJefe() ? '<span class="globo" title="Novedades de taller sin resolver">' + pend + '</span>'
+      : k === 'llegadas' && calle ? '<span class="globo" title="Vehículos en la calle">' + calle + '</span>' : '';
+    return cab + '<button type="button" data-vista="' + k + '"' + (E.vista === k ? ' aria-current="page"' : '') + '>' + (ICONOS[k] || '') + '<span>' + v.titulo + '</span>' + globo + '</button>';
   }).join('');
+  var t = $('#tituloVista'); if (t && VISTAS[E.vista]) t.textContent = VISTAS[E.vista].titulo;
+}
+function menuLateral(abrir) {
+  $('#lateral').classList.toggle('abierto', !!abrir);
+  $('#veloLat').hidden = !abrir;
 }
 function irA(v) {
   if (!vistaPermitida(v)) v = Object.keys(VISTAS).filter(vistaPermitida)[0];
   E.vista = v;
-  cerrarModal();
+  cerrarModal(); menuLateral(false);
+  if (esPantallaCarga(v)) G.tipo = v === 'salidas' ? 'salida' : v === 'llegadas' ? 'llegada' : 'combustible';
   $('#principal').innerHTML = VISTAS[v].html();
   pintarNav();
   VISTAS[v].iniciar();
@@ -3785,7 +4011,7 @@ function entrar() {
     E.sincOk = true; E.ultimaSinc = ahoraHM();
     mostrar('app');
     pintarSinc(); tictac();
-    irA(E.usuario.rol === 'SEGURIDAD' ? 'garita' : 'inicio');
+    irA(E.usuario.rol === 'SEGURIDAD' ? 'salidas' : 'inicio');
     relojes.forEach(clearInterval);
     INACT.ult = Date.now();
     relojes = [setInterval(tictac, 1000), setInterval(sincronizar, 10000), setInterval(pintar, 30000), setInterval(vigilarInactividad, 1000)];
@@ -3832,15 +4058,16 @@ function refrescarConectados() { var el = $('#listaConectados'); if (el && E.usu
 function abrirAyuda() {
   var paso = function (t, d) { return '<div style="padding:7px 0;border-bottom:1px solid var(--linea)"><b>' + t + '</b><div class="tenue" style="color:var(--tinta-2)">' + d + '</div></div>'; };
   var cuerpo = puedeCargar() ?
-    paso('Cargar una salida', 'En Garita escribí la patente (o una parte) y Enter. Elegí el chofer y Enter. Con otro Enter queda guardada. La hora, el turno, la planta y el km inicial ya vienen puestos.') +
-    paso('Cargar una llegada', 'Escribí la patente y Enter (o tocá la unidad en la lista "En la calle ahora"). Cargá km final, litros e importe pasando con Enter. El recorrido se calcula solo.') +
-    paso('Sólo combustible', 'Patente, Enter y después F4. Si la unidad tiene un viaje de hoy, la carga se anota en ese viaje.') +
+    paso('Cargar una salida', 'En el menú de la izquierda tocá SALIDAS. Escribí la patente (o una parte) y Enter. Elegí el chofer y Enter. Con otro Enter queda guardada. La hora, el turno, la planta y el km inicial ya vienen puestos.') +
+    paso('Cargar una llegada', 'Tocá LLEGADAS en el menú y tocá el vehículo en la lista "En la calle" (o escribí la patente y Enter). Cargá km final, litros e importe pasando con Enter. El recorrido se calcula solo.') +
+    paso('Sólo combustible', 'Tocá COMBUSTIBLE en el menú, patente y Enter. Si la unidad tiene un viaje de hoy, la carga se anota en ese viaje.') +
     paso('Corregir algo', 'Tocá el registro en "Movimientos de hoy" o en Movimientos. Desde ahí también se puede anular, indicando el motivo.') +
-    paso('Una patente que no figura', 'Entrá a Patentes, escribila completa y tocá "Agregar patente". Queda en tu planta y enseguida podés cargar su salida.') +
+    paso('Un vehículo que no figura', 'Entrá a Vehículos, escribí la patente completa y tocá "Agregar vehículo". Queda en tu planta y enseguida podés cargar su salida.') +
+    paso('Un chofer que no figura', 'Entrá a Choferes, escribí apellido y nombre y tocá "Agregar chofer".') +
     paso('Avisar un problema de la unidad', 'Escribilo en "Novedad para taller" al cargar la llegada. La unidad queda marcada hasta que un supervisor lo resuelva.') +
     paso('Buscar', 'En el buscador de patentes también podés escribir el apellido del chofer para encontrar la unidad que tiene en la calle.') +
     '<div class="ayuda" style="margin-top:12px"><span><kbd>F2</kbd> nueva carga</span><span><kbd>Enter</kbd> avanzar y guardar</span><span><kbd>F4</kbd> sólo combustible</span><span><kbd>Esc</kbd> cancelar</span></div>'
-    : paso('Tu usuario es de solo consulta', 'Podés ver Movimientos, Alertas, Patentes y el Panel, y exportar a PDF o Excel. No podés cargar ni modificar datos.') +
+    : paso('Tu usuario es de solo consulta', 'Podés ver Vehículos, Choferes, Movimientos, Alertas y el Panel, y exportar a PDF o Excel. No podés cargar ni modificar datos.') +
       paso('Ver una unidad', 'Tocá cualquier patente para abrir su ficha con el historial.');
   abrirModal('<header><h2>Manual de uso</h2><button class="x" data-cerrar aria-label="Cerrar">×</button></header><div class="cuerpo">' + cuerpo +
     '</div><footer><span class="espacio"></span><button class="btn primario" type="button" data-cerrar autofocus>Entendido</button></footer>', 'angosto');
@@ -3885,10 +4112,12 @@ function arrancar() {
     $('#pin').type = ver ? 'text' : 'password'; this.textContent = ver ? 'Ocultar' : 'Ver'; this.setAttribute('aria-pressed', ver ? 'true' : 'false'); $('#pin').focus();
   };
   $('#nav').onclick = function (e) { var b = e.target.closest('[data-vista]'); if (b) irA(b.getAttribute('data-vista')); };
+  $('#btnMenu').onclick = function () { menuLateral(!$('#lateral').classList.contains('abierto')); };
+  $('#veloLat').onclick = function () { menuLateral(false); };
   $('#selPlanta').onchange = function () {
     E.planta = this.value; guardarLocal('planta:' + E.usuario.nombre, E.planta || '*');
     M.planta = E.planta;
-    if (E.vista === 'garita' && G.modo) pintar(); else irA(E.vista);
+    if (esPantallaCarga(E.vista) && G.modo) pintar(); else irA(E.vista);
   };
   $('#btnSalir').onclick = abrirMiUsuario;
   $('#btnAyuda').onclick = abrirAyuda;
@@ -3903,12 +4132,12 @@ function arrancar() {
     if ($('#app').hidden) return;
     if (e.key === 'Escape') {
       if (modalAbierto) { e.preventDefault(); cerrarModal(); }
-      else if (E.vista === 'garita' && (G.modo || $('#gPatente').value)) { e.preventDefault(); cancelarCarga(); }
+      else if (esPantallaCarga(E.vista) && (G.modo || $('#gPatente').value)) { e.preventDefault(); cancelarCarga(); }
     } else if (e.key === 'F2' && puedeCargar()) {
       e.preventDefault(); cerrarModal();
-      if (E.vista !== 'garita') irA('garita'); else if (G.modo) cancelarCarga();
+      if (!esPantallaCarga(E.vista)) irA('salidas'); else if (G.modo) cancelarCarga();
       $('#gPatente').focus(); $('#gPatente').select();
-    } else if (e.key === 'F4' && E.vista === 'garita' && !modalAbierto && G.patente) {
+    } else if (e.key === 'F4' && esPantallaCarga(E.vista) && !modalAbierto && G.patente) {
       e.preventDefault(); formCombustible(G.patente);
     }
   });
