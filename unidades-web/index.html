@@ -406,6 +406,16 @@ table.tabla { border-collapse: collapse; width: 100%; font-size: 13px; }
 .quien-linea small { font-size: 12px; }
 tr.de-otro > td, .fila-calle.de-otro { background: var(--ambar-suave) !important; }
 tr.de-otro > td:first-child, .fila-calle.de-otro { box-shadow: inset 4px 0 0 #e0a100; }
+
+/* Patentes: alta de patentes nuevas */
+.pat-grande { font-size: 20px; font-weight: 700; letter-spacing: .06em; padding: 9px 11px !important; }
+.valor-fijo { border: 1px dashed var(--linea); border-radius: 7px; padding: 7px 9px; font-weight: 600; background: var(--panel-2); }
+details.tarjeta > summary.resumen-nov { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; list-style: none; }
+details.tarjeta > summary.resumen-nov::-webkit-details-marker { display: none; }
+details.tarjeta > summary.resumen-nov::before { content: "▸"; color: var(--tinta-3); }
+details.tarjeta[open] > summary.resumen-nov::before { content: "▾"; }
+details.tarjeta > summary.resumen-nov h2 { margin: 0; font-size: 15px; }
+details.tarjeta > .vista { padding: 0 10px 10px; }
 </style>
 </head>
 <body>
@@ -3519,13 +3529,147 @@ function yaGuardado(pedido, r) {
   });
 }
 
+/* ============================================================ PATENTES (reemplaza a "Novedades" en el menú)
+ * Para dar de alta una patente que no figura en el sistema, en pocos pasos y sin entrar a Datos base.
+ *   - Seguridad: sólo puede AGREGAR (la unidad queda en su planta). No modifica ni da de baja: eso es de los jefes.
+ *   - Supervisor / administrador: además eligen la planta y, más abajo, siguen teniendo el tablero de novedades de taller.
+ * La base valida todo de nuevo (acción altaUnidad): formato de patente, que no exista, planta y listas. */
+var PT = { buscar: '', ultima: '' };
+
+function patenteFormatoOk(p) { return /^([A-Z]{3}[0-9]{3}|[A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z][0-9]{3}[A-Z]{3}|[0-9]{3}[A-Z]{3})$/.test(p); }
+function plantaParaAlta() { return E.usuario.rol === 'SEGURIDAD' && E.usuario.planta ? E.usuario.planta : (E.planta || ''); }
+
+function vistaPatentes() {
+  var fija = E.usuario.rol === 'SEGURIDAD' && E.usuario.planta;
+  var alta = puedeCargar() ? '<section class="tarjeta"><header><h2>Agregar una patente nueva</h2><span class="tenue">para las unidades que todavía no figuran en el sistema</span></header>' +
+    '<div class="cuerpo"><div class="grilla">' +
+      '<label class="campo c4"><span>Patente</span><input id="ptPat" class="mono pat-grande" style="text-transform:uppercase" maxlength="10" spellcheck="false" autocomplete="off" placeholder="AB123CD" aria-describedby="ptEstado"><small id="ptEstado">Escribila completa: ABC123, AB123CD o de moto A123BCD.</small></label>' +
+      (fija ? '<div class="campo c4"><span>Planta</span><div class="valor-fijo">' + esc(E.usuario.planta) + '</div><small>Se agrega en tu planta.</small></div>'
+        : '<label class="campo c4"><span>Planta</span><select id="ptPlanta">' + opciones(E.listas.plantas, plantaParaAlta(), '— sin planta —') + '</select></label>') +
+      '<label class="campo c4"><span>Servicio habitual (opcional)</span><select id="ptServicio">' + opciones(E.listas.servicios, '', '—') + '</select></label>' +
+      '<label class="campo c4"><span>Combustible (opcional)</span><select id="ptProducto">' + opciones(E.listas.productos, '', '—') + '</select></label>' +
+      '<label class="campo c4"><span>Km actual (opcional)</span><input id="ptKm" class="num" inputmode="numeric" maxlength="9" placeholder="Ej.: 125430"></label>' +
+      '<label class="campo c4"><span>Chofer habitual (opcional)</span><input id="ptChofer" maxlength="80" autocomplete="off" placeholder="Apellido y nombre"></label>' +
+    '</div><div class="error-txt" id="ptMsg" role="alert"></div>' +
+    '<div class="acciones" style="margin-top:10px"><button class="btn primario grande" type="button" id="ptGuardar">Agregar patente</button></div>' +
+    '<div id="ptHecho"></div></div></section>' : '';
+  var lista = '<section class="tarjeta"><header><h2>Patentes ' + (E.planta ? 'de ' + esc(E.planta) : 'cargadas') + '</h2><span class="tenue num" id="ptCuenta"></span><span class="espacio"></span>' +
+    '<input class="entrada" id="ptBuscar" style="width:220px" placeholder="Buscar patente, servicio o chofer" aria-label="Buscar patentes" value="' + esc(PT.buscar) + '"></header>' +
+    '<div class="tabla-cont" id="ptLista"></div></section>';
+  var nov = esJefe() ? '<details class="tarjeta" id="ptNovedades"' + (E.novedades.some(function (n) { return n.estado !== 'RESUELTA'; }) ? ' open' : '') + '>' +
+    '<summary class="resumen-nov"><h2>Novedades de taller</h2><span class="tenue num" id="ptNovCuenta"></span></summary>' + vistaNovedades() + '</details>' : '';
+  return '<div class="vista">' + alta + lista + nov + '</div>';
+}
+
+function estadoPatenteTipeada() {
+  var el = $('#ptEstado'); if (!el) return;
+  var p = leerPatente($('#ptPat').value), u = unidad(p);
+  el.className = '';
+  if (!p) { el.textContent = 'Escribila completa: ABC123, AB123CD o de moto A123BCD.'; return; }
+  if (u) {
+    el.className = 'mal';
+    el.textContent = 'Ya está en el sistema' + (u.planta ? ' (planta ' + u.planta + ')' : '') + (u.estado && u.estado !== 'ACTIVA' ? ', estado ' + u.estado : '') + '. No hace falta agregarla.';
+    return;
+  }
+  if (patenteFormatoOk(p)) { el.className = 'bien'; el.textContent = 'No figura: se puede agregar.'; return; }
+  el.textContent = p.length < 6 ? 'Seguí escribiendo…' : 'No parece una patente argentina: revisala.';
+}
+
+function iniciarPatentes() {
+  if ($('#ptPat')) {
+    var pat = $('#ptPat');
+    pat.oninput = function () { $('#ptMsg').textContent = ''; estadoPatenteTipeada(); };
+    autocompletar($('#ptChofer'), { fuente: fuenteChoferes(), tabElige: true, elegir: function (it) { $('#ptChofer').value = it.valor; } });
+    $('#ptGuardar').onclick = guardarPatenteNueva;
+    $('.vista').onkeydown = function (e) {
+      if (e.key !== 'Enter' || !e.target.closest('#ptPat, #ptKm, #ptServicio, #ptProducto, #ptPlanta')) return;
+      e.preventDefault(); guardarPatenteNueva();
+    };
+    $('#ptHecho').onclick = function (e) {
+      var b = e.target.closest('[data-salida]'); if (!b) return;
+      var p = b.getAttribute('data-salida');
+      G.tipo = 'salida'; irA('garita'); elegirUnidad(p);
+    };
+    if (PT.ultima) pintarHechoPatente(PT.ultima);
+    pat.focus();
+  }
+  $('#ptBuscar').oninput = function () { PT.buscar = this.value; pintarListaPatentes(); };
+  if ($('#ptNovedades')) iniciarNovedades();
+  pintarPatentes();
+}
+
+function pintarHechoPatente(p) {
+  var h = $('#ptHecho'); if (!h) return;
+  h.innerHTML = '<div class="hecho">✓ Se agregó ' + patHtml(p) + ' al sistema.' + '<span class="espacio"></span>' +
+    (puedeCargar() && vistaPermitida('garita') ? '<button class="btn" type="button" data-salida="' + esc(p) + '">Cargar su salida ahora</button>' : '') + '</div>';
+}
+
+function guardarPatenteNueva() {
+  var b = $('#ptGuardar'); if (!b || b.disabled) return;
+  var p = leerPatente($('#ptPat').value), msg = $('#ptMsg'), km = $('#ptKm').value.trim();
+  msg.textContent = '';
+  if (p.length < 5) { msg.textContent = 'Escribí la patente completa.'; return $('#ptPat').focus(); }
+  if (unidad(p)) { estadoPatenteTipeada(); msg.textContent = 'La patente ' + p + ' ya está en el sistema.'; return $('#ptPat').focus(); }
+  if (E.usuario.rol === 'SEGURIDAD' && !patenteFormatoOk(p)) { msg.textContent = p + ' no parece una patente argentina (ABC123, AB123CD o A123BCD). Revisala.'; return $('#ptPat').focus(); }
+  if (km && leerKm(km) === '') { msg.textContent = 'El km tiene que ser un número.'; return $('#ptKm').focus(); }
+  var chofer = $('#ptChofer').value.replace(/\s+/g, ' ').trim();
+  var datos = { patente: p, planta: $('#ptPlanta') ? $('#ptPlanta').value : plantaParaAlta(), servicio: $('#ptServicio').value, producto: $('#ptProducto').value, km: leerKm(km), chofer: chofer };
+  b.disabled = true; b.textContent = 'Guardando…';
+  escribir('altaUnidad', datos).then(function (d) {
+    // queda en la lista local al instante; la sincronización trae la versión de la base
+    E.unidades[p] = { patente: p, planta: d && d.planta || datos.planta || '', servicio: datos.servicio, producto: datos.producto, km: datos.km, chofer: chofer, fechaKm: datos.km === '' ? '' : hoy(), estado: 'ACTIVA' };
+    if (chofer) asegurarChofer(chofer);
+    PT.ultima = p;
+    avisar('Patente ' + p + ' agregada.');
+    if (E.vista !== 'patentes') return;
+    b.disabled = false; b.textContent = 'Agregar patente';
+    ['#ptPat', '#ptKm', '#ptChofer'].forEach(function (s) { $(s).value = ''; });
+    $('#ptServicio').value = ''; $('#ptProducto').value = '';
+    estadoPatenteTipeada(); pintarHechoPatente(p); pintarListaPatentes();
+    $('#ptPat').focus();
+  }, function (err) {
+    if (E.vista !== 'patentes') return avisar('No se pudo agregar ' + p + ': ' + err.message, 'error');
+    b.disabled = false; b.textContent = 'Agregar patente';
+    msg.textContent = err.codigo === 'RED' ? 'No hay conexión: la patente NO se guardó. Probá de nuevo cuando vuelva internet.' : err.message;
+  });
+}
+
+function pintarListaPatentes() {
+  var cont = $('#ptLista'); if (!cont) return;
+  var q = sinAcentos(PT.buscar).trim(), qp = leerPatente(PT.buscar);
+  var todas = Object.keys(E.unidades).map(function (k) { return E.unidades[k]; }).filter(function (u) { return !E.planta || u.planta === E.planta; });
+  var l = todas.filter(function (u) {
+    return !q || (qp && u.patente.indexOf(qp) > -1) || sinAcentos([u.servicio, u.chofer, u.estado, u.planta].join(' ')).indexOf(q) > -1;
+  }).sort(function (a, b) { return a.patente === PT.ultima ? -1 : b.patente === PT.ultima ? 1 : a.patente < b.patente ? -1 : 1; });
+  $('#ptCuenta').textContent = q ? l.length + ' de ' + todas.length : todas.length;
+  var max = 60, ver = l.slice(0, max);
+  cont.innerHTML = ver.length ? '<table class="tabla"><thead><tr><th>Patente</th><th>Planta</th><th>Servicio</th><th>Combustible</th><th class="num">Km</th><th>Chofer habitual</th><th>Estado</th></tr></thead><tbody>' +
+    ver.map(function (u) {
+      var ab = abiertoDe(u.patente);
+      var est = ab ? '<span class="pill calle">En la calle</span>' : u.estado && u.estado !== 'ACTIVA' ? '<span class="pill rojo">' + esc(u.estado) + '</span>' : '<span class="pill ok">En planta</span>';
+      return '<tr' + (u.patente === PT.ultima ? ' class="de-otro"' : '') + '><td>' + patHtml(u.patente) + '</td><td>' + esc(u.planta || '—') + '</td><td>' + esc(u.servicio || '—') + '</td><td>' + esc(u.producto || '—') + '</td>' +
+        '<td class="num">' + (u.km === '' || u.km === null || u.km === undefined ? '—' : esc(Number(u.km).toLocaleString('es-AR'))) + '</td><td>' + esc(u.chofer || '—') + '</td><td>' + est + '</td></tr>';
+    }).join('') + '</tbody></table>' + (l.length > max ? '<div class="cuerpo nota">Se muestran ' + max + ' de ' + l.length + '. Escribí parte de la patente para encontrarla.</div>' : '')
+    : '<div class="vacio-grande">' + (q ? 'Ninguna patente coincide con "' + esc(PT.buscar) + '".' + (qp.length >= 6 && puedeCargar() ? ' Si no está, agregala arriba.' : '') : 'No hay patentes cargadas.') + '</div>';
+}
+
+function pintarPatentes() {
+  pintarListaPatentes();
+  if ($('#ptNovedades')) {
+    var pend = E.novedades.filter(function (n) { return n.estado !== 'RESUELTA' && (!E.planta || !n.planta || n.planta === E.planta); }).length;
+    $('#ptNovCuenta').textContent = pend ? pend + ' sin resolver' : 'nada pendiente';
+    pintarNovedades();
+  }
+  if ($('#ptPat') && document.activeElement !== $('#ptPat')) estadoPatenteTipeada();
+}
+
 /* ============================================================ navegación, ingreso y arranque */
 var VISTAS = {
   inicio: { titulo: 'Inicio', html: vistaInicio, iniciar: iniciarInicio, pintar: pintarInicio, quien: function () { return E.usuario.rol !== 'SEGURIDAD'; } },
   garita: { titulo: 'Garita', html: vistaGarita, iniciar: iniciarGarita, pintar: pintarGarita, quien: puedeCargar },
   movimientos: { titulo: 'Movimientos', html: vistaMovimientos, iniciar: iniciarMovimientos, pintar: pintarMovimientos },
   alertas: { titulo: 'Alertas', html: vistaAlertas, iniciar: iniciarAlertas, pintar: pintarAlertas, quien: function () { return esJefe() || !puedeCargar(); } },
-  novedades: { titulo: 'Novedades', html: vistaNovedades, iniciar: iniciarNovedades, pintar: pintarNovedades },
+  patentes: { titulo: 'Patentes', html: vistaPatentes, iniciar: iniciarPatentes, pintar: pintarPatentes },  // reemplaza a "Novedades": alta de patentes (y, para jefes, el tablero de taller)
   panel: { titulo: 'Panel', html: vistaPanel, iniciar: iniciarPanel, pintar: function () {}, quien: function () { return esJefe() || !puedeCargar(); } },
   datos: { titulo: 'Datos base', html: vistaDatos, iniciar: iniciarDatos, pintar: pintarDatos, quien: esJefe },
   usuarios: { titulo: 'Usuarios', html: vistaUsuarios, iniciar: iniciarUsuarios, pintar: pintarUsuarios, quien: esJefe },
@@ -3538,7 +3682,7 @@ function pintarNav() {
   var al = alertas().filter(function (a) { return a.sev !== 'dato'; }), urg = al.filter(function (a) { return a.sev === 'critica'; }).length;
   var pend = E.novedades.filter(function (n) { return n.estado === 'PENDIENTE' && (!E.planta || !n.planta || n.planta === E.planta); }).length;
   $('#nav').innerHTML = Object.keys(VISTAS).filter(vistaPermitida).map(function (k) {
-    var globo = k === 'alertas' && al.length ? '<span class="globo' + (urg ? ' rojo' : '') + '">' + al.length + '</span>' : k === 'novedades' && pend ? '<span class="globo">' + pend + '</span>' : '';
+    var globo = k === 'alertas' && al.length ? '<span class="globo' + (urg ? ' rojo' : '') + '">' + al.length + '</span>' : k === 'patentes' && pend && esJefe() ? '<span class="globo">' + pend + '</span>' : '';
     return '<button type="button" data-vista="' + k + '"' + (E.vista === k ? ' aria-current="page"' : '') + '>' + VISTAS[k].titulo + globo + '</button>';
   }).join('');
 }
@@ -3688,10 +3832,11 @@ function abrirAyuda() {
     paso('Cargar una llegada', 'Escribí la patente y Enter (o tocá la unidad en la lista "En la calle ahora"). Cargá km final, litros e importe pasando con Enter. El recorrido se calcula solo.') +
     paso('Sólo combustible', 'Patente, Enter y después F4. Si la unidad tiene un viaje de hoy, la carga se anota en ese viaje.') +
     paso('Corregir algo', 'Tocá el registro en "Movimientos de hoy" o en Movimientos. Desde ahí también se puede anular, indicando el motivo.') +
-    paso('Avisar un problema de la unidad', 'Escribilo en "Novedad para taller" al cargar la llegada, o en Novedades. La unidad queda marcada hasta que se resuelva.') +
+    paso('Una patente que no figura', 'Entrá a Patentes, escribila completa y tocá "Agregar patente". Queda en tu planta y enseguida podés cargar su salida.') +
+    paso('Avisar un problema de la unidad', 'Escribilo en "Novedad para taller" al cargar la llegada. La unidad queda marcada hasta que un supervisor lo resuelva.') +
     paso('Buscar', 'En el buscador de patentes también podés escribir el apellido del chofer para encontrar la unidad que tiene en la calle.') +
     '<div class="ayuda" style="margin-top:12px"><span><kbd>F2</kbd> nueva carga</span><span><kbd>Enter</kbd> avanzar y guardar</span><span><kbd>F4</kbd> sólo combustible</span><span><kbd>Esc</kbd> cancelar</span></div>'
-    : paso('Tu usuario es de solo consulta', 'Podés ver Movimientos, Alertas, Novedades y el Panel, y exportar a PDF o Excel. No podés cargar ni modificar datos.') +
+    : paso('Tu usuario es de solo consulta', 'Podés ver Movimientos, Alertas, Patentes y el Panel, y exportar a PDF o Excel. No podés cargar ni modificar datos.') +
       paso('Ver una unidad', 'Tocá cualquier patente para abrir su ficha con el historial.');
   abrirModal('<header><h2>Cómo se usa</h2><button class="x" data-cerrar aria-label="Cerrar">×</button></header><div class="cuerpo">' + cuerpo +
     '</div><footer><span class="espacio"></span><button class="btn primario" type="button" data-cerrar autofocus>Entendido</button></footer>', 'angosto');
