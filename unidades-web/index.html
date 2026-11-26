@@ -1046,7 +1046,7 @@ function patFicha(p, nota) {
 /* ============================================================ estado */
 var E = {
   token: '', usuario: null, planta: '', vista: 'salidas',
-  listas: { plantas: [], servicios: [], productos: [] }, config: { horasEnCalle: 16, kmMaxViaje: 600, kmExcluir: 2000, litrosMax: 150, diasMaxCalle: 1 },
+  listas: { plantas: [], servicios: [], productos: [] }, config: { horasEnCalle: 16, kmMaxViaje: 600, kmExcluir: 2000, litrosMax: 150, diasMaxCalle: 2, horasCierreAuto: 48 },
   unidades: {}, choferes: [], novedades: [], dia: [], abiertos: [], fecha: '', ver: '', verCat: '', planilla: '',
   mes: null,            // registros del mes en curso, por id (para Alertas)
   con: [],              // quiénes están usando el sistema ahora: [nombre, rol, planta]
@@ -1387,6 +1387,7 @@ function pintarTipo() {
 function pillEstado(r) {
   if (r.pendiente) return '<span class="pill gris">Guardando</span>';
   if (r.estado === ESTADO.ABIERTO) return '<span class="pill calle">En la calle</span>';
+  if (r.salida && !r.llegada && r.usrLle === 'Sistema') return '<span class="pill gris" title="No se cargó la llegada: el sistema cerró el viaje solo">Cierre automático</span>';
   if (r.salida) return '<span class="pill ok">Completo</span>';
   return '<span class="pill gris">' + (r.litros !== '' || r.importe !== '' ? 'Combustible' : 'Sin salida') + '</span>';
 }
@@ -1413,7 +1414,8 @@ function vistaGarita() {
       '<div class="buscador"><input id="gPatente" aria-label="Patente" placeholder="Escribí la patente (o parte) y Enter" maxlength="12" spellcheck="false"></div>' +
       '<div id="gForm"></div><div id="gRapidas" class="rapidas" hidden></div><div id="gHecho"></div>' +
     '</div></section>';
-  var calle = '<section class="tarjeta"><header><h2 id="gCalleTitulo">Tocá el vehículo que volvió</h2><span class="tenue num" id="gCalleCuenta"></span></header><div class="lista-calle" id="gCalle"></div></section>';
+  var calle = '<section class="tarjeta"><header><h2 id="gCalleTitulo">Tocá el vehículo que volvió</h2><span class="tenue num" id="gCalleCuenta"></span><span class="espacio"></span>' +
+      '<span class="tenue nota-cierre">Si no se carga la llegada, el sistema cierra el viaje solo a las ' + esc(E.config.horasCierreAuto || 48) + ' h</span></header><div class="lista-calle" id="gCalle"></div></section>';
   var hoyS = '<section class="tarjeta"><header><h2>Movimientos de hoy</h2><span class="tenue num" id="gHoyCuenta"></span><span class="espacio"></span>' +
       '<button class="btn" type="button" id="gPdf" title="Descargar la planilla de hoy en PDF">Parte del día en PDF</button>' +
       '<input class="entrada" id="gFiltro" style="width:220px" placeholder="Filtrar por patente o chofer" aria-label="Filtrar movimientos de hoy"></header>' +
@@ -1708,7 +1710,10 @@ function formCombustible(p) {
   var u = unidad(p) || {}, dest = registroParaCombustible(p);
   G.modo = 'combustible'; G.patente = p; G.reg = dest;
   $('#gCarga').className = 'tarjeta carga combustible';
-  var resumen = dest ? 'Se anota en el viaje de hoy' + (dest.salida ? ' de las <b class="num">' + esc(dest.salida) + '</b>' : '') + (dest.chofer ? ' · ' + esc(dest.chofer) : '')
+  var yaTiene = dest && (dest.litros !== '' || dest.importe !== '');
+  var resumen = dest ? 'Se anota en el viaje ' + (dest.estado === ESTADO.ABIERTO ? 'que está en la calle' : 'de hoy') + (dest.salida ? ' (salió ' + (dest.fecha !== hoy() ? fechaCorta(dest.fecha) + ' ' : '') + '<b class="num">' + esc(dest.salida) + '</b>)' : '') +
+      (dest.chofer ? ' · ' + esc(dest.chofer) : '') + ' · <b>no cambia su salida ni su llegada</b>' +
+      (yaTiene ? ' · ya tiene ' + [dest.litros !== '' ? decimal(dest.litros) + ' l' : '', dest.importe !== '' ? plata(dest.importe) : ''].filter(Boolean).join(' · ') + ': lo que cargues se suma' : '')
     : 'Carga sin viaje: queda como un registro sólo de combustible';
   $('#gForm').innerHTML = encabezadoPaso('COMBUSTIBLE', p, resumen, false) + '<div class="grilla">' +
     '<label class="campo c3"><span>Litros</span><input id="cLitros" class="num" inputmode="decimal"></label>' +
@@ -1734,8 +1739,12 @@ function guardarCombustible() {
   else r = { fecha: hoy(), turno: turnoSugerido(p), patente: p, planta: E.planta || u.planta || '', servicio: '', salida: '', llegada: '', fechaLle: '',
     kmIni: '', kmFin: '', chofer: '', acomp: '' };
   delete r.pendiente;
-  r.litros = litros; r.importe = importe; r.producto = $('#cProducto').value; r.obs = $('#cObs').value.trim();
-  enviarCarga({ paso: 'combustible', registro: r }, r, r.estado || ESTADO.CERRADO,
+  // en la base se SUMA a lo que ya tenía el viaje; en pantalla se muestra el total enseguida
+  var suma = function (x, y) { return x === '' ? y : y === '' ? x : Math.round((Number(x) + Number(y)) * 1000) / 1000; };
+  var enviar = {}; Object.keys(r).forEach(function (k) { enviar[k] = r[k]; });
+  enviar.litros = litros; enviar.importe = importe; enviar.producto = $('#cProducto').value; enviar.obs = $('#cObs').value.trim();
+  r.litros = G.reg ? suma(G.reg.litros, litros) : litros; r.importe = G.reg ? suma(G.reg.importe, importe) : importe; r.producto = enviar.producto; r.obs = enviar.obs;
+  enviarCarga({ paso: 'combustible', registro: enviar, sumar: !!G.reg }, r, r.estado || ESTADO.CERRADO,
     'Combustible de ' + p + (litros !== '' ? ' · ' + decimal(litros) + ' l' : '') + (importe !== '' ? ' · ' + plata(importe) : ''), function () { formCombustible(p); });
 }
 
@@ -2946,6 +2955,14 @@ function editarUsuario(u) {
 
 /** Ventana del usuario que está usando el sistema: datos, cambio de PIN y salir. */
 function abrirMiUsuario() {
+  // seguridad: una sola cosa, sin campos que confundan (el PIN se lo cambia el administrador desde Usuarios)
+  if (E.usuario.rol === 'SEGURIDAD') {
+    var ms = abrirModal('<header><h2>' + esc(E.usuario.nombre) + '</h2><button class="x" data-cerrar aria-label="Cerrar">×</button></header>' +
+      '<div class="cuerpo"><button class="btn peligro grande" type="button" id="cerrarSesion" style="width:100%">Cerrar sesión</button></div>', 'angosto');
+    $('#cerrarSesion', ms).onclick = function () { cerrarSesion(''); };
+    $('#cerrarSesion', ms).focus();
+    return;
+  }
   var m = abrirModal('<header><h2>' + esc(E.usuario.nombre) + '</h2><span class="pill ' + (E.usuario.rol === 'SEGURIDAD' ? 'azul' : 'gris') + '">' + esc(nombreRol(E.usuario.rol)) + '</span>' +
     '<button class="x" data-cerrar aria-label="Cerrar">×</button></header><div class="cuerpo">' +
     '<p class="nota" style="margin-top:0">' + esc(ROLES_INFO[E.usuario.rol] ? ROLES_INFO[E.usuario.rol][1] : '') + (E.usuario.planta ? ' Planta: ' + esc(E.usuario.planta) + '.' : '') + '</p>' +

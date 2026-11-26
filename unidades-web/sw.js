@@ -1,5 +1,5 @@
-// versión 5277410e5d
-const CACHE = 'ul-5277410e5d';
+// versión e04ab3cae4
+const CACHE = 'ul-e04ab3cae4';
 const CARCASA = ['./', 'index.html', 'manifest.webmanifest', 'icono-192.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CARCASA)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((k) => Promise.all(k.filter((n) => n !== CACHE).map((n) => caches.delete(n)))).then(() => self.clients.claim())); });
